@@ -4,7 +4,7 @@ from Trapmf import Trapmf
 from Trimf import Trimf
 from Point import Point
 import matplotlib.pyplot as plt
-from scipy.interpolate import make_interp_spline
+from scipy.interpolate import make_interp_spline, BSpline
 import numpy as np
 
 class ThermalControl:
@@ -51,8 +51,8 @@ class ThermalControl:
         x = np.array(range(len(self.plots)))
         y = self.plots
 
-        xnew = np.linspace(x.min(), x.max(), 1000)
-        spl = make_interp_spline(x, y)
+        xnew = np.linspace(x.min(), x.max(), 300)
+        spl = make_interp_spline(x, y, k=3) # type: BSpline
         y_smooth = spl(xnew)
 
         plt.plot([0, len(self.plots)], [0, 0], marker = 'o', linestyle="dashed")
