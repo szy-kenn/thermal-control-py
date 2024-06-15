@@ -29,8 +29,9 @@ class ThermalControl:
         self.actual_temp = float(input("Enter the actual temperature: "))
         self.desired_temp = float(input("Enter your desired temperature: "))
         output_type = None
+        iterations = 100
 
-        while self.actual_temp != self.desired_temp:
+        for i in range(iterations):
 
             self.current_error = self.desired_temp - self.actual_temp
 
@@ -42,26 +43,25 @@ class ThermalControl:
             self.actual_temp = self.heater_cooler.update_temp(self.actual_temp, output_type)
             print(f"Output: {output_type} | Actual Temp: {self.actual_temp}")
             self.prev_error = self.current_error
-            self.plots.append(self.current_error)
+            self.plots.append(self.actual_temp)
 
-        self.plots.append(self.desired_temp - self.actual_temp)
+        self.plots.append(self.actual_temp)
+        # self.plots.append(self.desired_temp - self.actual_temp)
         self.show_plot()
 
     def show_plot(self):
         x = np.array(range(len(self.plots)))
         y = self.plots
 
-        xnew = np.linspace(x.min(), x.max(), 300)
+        xnew = np.linspace(x.min(), x.max(), 500)
         spl = make_interp_spline(x, y, k=3) # type: BSpline
         y_smooth = spl(xnew)
 
-        plt.plot([0, len(self.plots)], [0, 0], marker = 'o', linestyle="dashed")
+        plt.plot([0, len(self.plots)], [self.desired_temp, self.desired_temp], marker = 'o', linestyle="dashed")
         plt.plot(xnew, y_smooth)
         plt.xlabel("Time")
-        plt.ylabel("Error")
-        plt.ylim(max(abs(plot) for plot in self.plots), max(abs(plot) for plot in self.plots) * -1)
+        plt.ylabel("Temperature")
         plt.show()
-
 
 # membership functions
 error_neg = Trapmf(Point(-4, 0), Point(-4, 1), Point(-2, 1), Point(0, 0))
